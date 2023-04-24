@@ -2,7 +2,6 @@ package org.misikovich;
 
 import java.util.*;
 import java.util.function.IntUnaryOperator;
-import java.util.stream.IntStream;
 
 public class RomanToIntegerConverter {
     private final Map<String, IntUnaryOperator> actionMap;
@@ -26,19 +25,40 @@ public class RomanToIntegerConverter {
     }
 
     public Integer convertRoman(String roman) {
-        roman = roman.toUpperCase();
-
-        return 0;
+        List<String> parsed = parseRoman(roman);
+        int prev = 0;
+        for (String s : parsed) {
+            prev = actionMap.get(s).applyAsInt(prev);
+        }
+        System.gc();
+        return prev;
     }
 
-    private List<String> parseRoman(String roman) {
-        String[] romanSplitOnDoubles = roman.toUpperCase().split("(?<=IV|IX|XL|XC|CD|CM)(?!$)");
+    public List<String> parseRoman(String roman) {
+        String[] romanSplitEvery = roman.toUpperCase().split("");
+        List<String> romanSplitOnDoubles = new ArrayList<>();
         List<String> romanDoubles = new ArrayList<>(List.of("IV", "IX", "XL", "XC", "CD", "CM"));
+        for (int i = 0; i < romanSplitEvery.length - 1 ; i++) {
+            String d = romanSplitEvery[i] + romanSplitEvery[i + 1];
+            if (romanDoubles.contains(d)) {
+                romanSplitEvery[i] = "";
+                romanSplitEvery[i + 1] = "";
+                romanSplitOnDoubles.add(d);
+                i++;
+            }
+        }
         List<String> romansSplitted = new ArrayList<>();
-        for (String s : romanSplitOnDoubles) {
-            if (romanDoubles.contains(s)) romansSplitted.add(s);
-            else {
-                romansSplitted.addAll(Arrays.asList(s.split("")));
+        int i = 0;
+        for (String s : romanSplitEvery) {
+            if (s.equals("")) {
+                if (i > 0 && i % 2 != 0) {
+                    i++;
+                    continue;
+                }
+                romansSplitted.add(romanSplitOnDoubles.get((i + 1) / 2));
+                i++;
+            } else {
+                romansSplitted.add(s);
             }
         }
         return romansSplitted;
