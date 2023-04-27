@@ -29,14 +29,11 @@ class RomanConverter {
 
     private short tryToStack(short s1, short s2) {
         if (s1 == 1) {
-            if (s2 == 5) return 4;
-            if (s2 == 10) return 9;
+            if (s2 == 5 || s2 == 10) return (short) (s2 - s1);
         } else if (s1 == 10) {
-            if (s2 == 50) return 40;
-            if (s2 == 100) return 90;
+            if (s2 == 50 || s2 == 100) return (short) (s2 - s1);
         } else if (s1 == 100) {
-            if (s2 == 500) return 400;
-            if (s2 == 1000) return 900;
+            if (s2 == 500 || s2 == 1000) return (short) (s2 - s1);
         }
         return -1;
     }
